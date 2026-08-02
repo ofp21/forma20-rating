@@ -307,7 +307,7 @@
           <td>${item.name}</td>
           <td>${item.username}</td>
           <td>${item.workouts}</td>
-          <td class="level">${Math.round(item.level)}</td>
+          <td class="level">${item.level > 0 ? Math.round(item.level) : "—"}</td>
           <td><span class="rank">${item.rank}</span></td>
         `;
 
