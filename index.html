@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Рейтинг ФОРМА20</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #f5f5f5;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 32px 16px 60px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .label {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid #3a3a3a;
+      border-radius: 999px;
+      color: #bdbdbd;
+      font-size: 13px;
+      margin-bottom: 14px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(36px, 7vw, 72px);
+      line-height: 0.95;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .subtitle {
+      margin: 18px auto 0;
+      max-width: 760px;
+      color: #bdbdbd;
+      font-size: 18px;
+      line-height: 1.45;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin: 28px 0;
+    }
+
+    .stat {
+      background: #171717;
+      border: 1px solid #2a2a2a;
+      border-radius: 18px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 30px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .stat-text {
+      margin-top: 6px;
+      color: #a8a8a8;
+      font-size: 14px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      background: #151515;
+      border: 1px solid #292929;
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+    }
+
+    thead {
+      background: #202020;
+    }
+
+    th, td {
+      padding: 16px 14px;
+      text-align: left;
+      border-bottom: 1px solid #282828;
+      white-space: nowrap;
+    }
+
+    th {
+      color: #a8a8a8;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    td {
+      font-size: 16px;
+    }
+
+    tbody tr:hover {
+      background: #1d1d1d;
+    }
+
+    .place {
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+    }
+
+    .level {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .rank {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #252525;
+      color: #f2f2f2;
+      border: 1px solid #3a3a3a;
+      font-size: 14px;
+    }
+
+    .top-1 {
+      background: linear-gradient(90deg, rgba(255, 193, 7, 0.16), transparent);
+    }
+
+    .top-2 {
+      background: linear-gradient(90deg, rgba(190, 190, 190, 0.12), transparent);
+    }
+
+    .top-3 {
+      background: linear-gradient(90deg, rgba(205, 127, 50, 0.12), transparent);
+    }
+
+    .loading, .error {
+      padding: 28px;
+      text-align: center;
+      color: #bdbdbd;
+    }
+
+    .footer {
+      margin-top: 22px;
+      color: #8c8c8c;
+      font-size: 13px;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    @media (max-width: 720px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      th, td {
+        padding: 13px 10px;
+      }
+
+      .subtitle {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="page">
+    <section class="hero">
+      <div class="label">Августовская лига</div>
+      <h1>Рейтинг ФОРМА20</h1>
+      <p class="subtitle">
+        Главный показатель месяца - средний уровень. Он считается по результатам сданных тренировок:
+        вес гири, повторы и тоннаж переводятся в уровень от 10 до 99.
+      </p>
+    </section>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-number" id="totalAthletes">-</div>
+        <div class="stat-text">участников в рейтинге</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="totalWorkouts">-</div>
+        <div class="stat-text">сданных тренировок</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-number" id="avgLevel">-</div>
+        <div class="stat-text">средний уровень лиги</div>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <div id="loading" class="loading">Загружаю рейтинг...</div>
+
+      <table id="ratingTable" style="display:none;">
+        <thead>
+          <tr>
+            <th>Место</th>
+            <th>Имя</th>
+            <th>Username</th>
+            <th>Тренировок</th>
+            <th>Средний уровень</th>
+            <th>Ранг</th>
+          </tr>
+        </thead>
+        <tbody id="ratingBody"></tbody>
+      </table>
+    </section>
+
+    <div class="footer">
+      Рейтинг обновляется автоматически из таблицы ФОРМА20. Чем больше тренировок сдано, тем объективнее позиция в рейтинге.
+    </div>
+  </main>
+
+  <script>
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853897&single=true&output=csv";
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+          cell += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === "," && !insideQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+          if (cell || row.length) {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          }
+          if (char === "\r" && nextChar === "\n") i++;
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell || row.length) {
+        row.push(cell);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function renderTable(rows) {
+      const body = document.getElementById("ratingBody");
+      body.innerHTML = "";
+
+      const data = rows
+        .slice(1)
+        .filter(row => row[0] && row[1])
+        .map(row => ({
+          place: row[0],
+          name: row[1],
+          username: row[2] || "",
+          workouts: Number(row[3] || 0),
+          level: Number(String(row[4] || "0").replace(",", ".")),
+          rank: row[5] || ""
+        }));
+
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+
+        if (String(item.place) === "1") tr.classList.add("top-1");
+        if (String(item.place) === "2") tr.classList.add("top-2");
+        if (String(item.place) === "3") tr.classList.add("top-3");
+
+        tr.innerHTML = `
+          <td class="place">${item.place}</td>
+          <td>${item.name}</td>
+          <td>${item.username}</td>
+          <td>${item.workouts}</td>
+          <td class="level">${Math.round(item.level)}</td>
+          <td><span class="rank">${item.rank}</span></td>
+        `;
+
+        body.appendChild(tr);
+      });
+
+      const totalAthletes = data.length;
+      const totalWorkouts = data.reduce((sum, item) => sum + item.workouts, 0);
+      const avgLevel = data.length
+        ? Math.round(data.reduce((sum, item) => sum + item.level, 0) / data.length)
+        : 0;
+
+      document.getElementById("totalAthletes").textContent = totalAthletes;
+      document.getElementById("totalWorkouts").textContent = totalWorkouts;
+      document.getElementById("avgLevel").textContent = avgLevel;
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("ratingTable").style.display = "table";
+    }
+
+    async function loadRating() {
+      try {
+        const response = await fetch(CSV_URL);
+
+        if (!response.ok) {
+          throw new Error("Не удалось загрузить таблицу");
+        }
+
+        const text = await response.text();
+        const rows = parseCSV(text);
+
+        renderTable(rows);
+      } catch (error) {
+        document.getElementById("loading").className = "error";
+        document.getElementById("loading").textContent =
+          "Не удалось загрузить рейтинг. Проверь, что Google-таблица опубликована в интернете как CSV.";
+        console.error(error);
+      }
+    }
+
+    loadRating();
+  </script>
+</body>
+</html>
