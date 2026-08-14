@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Рейтинг ФОРМА20</title>
-
   <style>
     *{box-sizing:border-box}
     body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:#f5f5f5}
@@ -43,7 +42,7 @@
 
     .modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);z-index:1000}
     .modal-overlay.is-open{display:flex}
-    .modal-card{width:min(940px,100%);max-height:88vh;overflow:auto;background:#151515;border:1px solid #343434;border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+    .modal-card{width:min(980px,100%);max-height:88vh;overflow:auto;background:#151515;border:1px solid #343434;border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.55)}
     .modal-head{display:flex;gap:18px;justify-content:space-between;align-items:flex-start;padding:22px 22px 16px;border-bottom:1px solid #282828}
     .modal-title{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.03em}
     .modal-meta{margin-top:8px;color:#a8a8a8;font-size:14px;line-height:1.4}
@@ -53,17 +52,31 @@
     .details-level{font-weight:800;font-size:18px}
     .empty-details{padding:22px;color:#bdbdbd}
 
-    .week-panel{margin:20px 0 18px;padding:18px;background:#101010;border:1px solid #2d2d2d;border-radius:18px}
-    .week-title{font-size:17px;font-weight:800;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em}
+    .panel{margin:20px 0 18px;padding:18px;background:#101010;border:1px solid #2d2d2d;border-radius:18px}
+    .panel-title{font-size:17px;font-weight:800;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em}
     .week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-    .week-card{background:#191919;border:1px solid #303030;border-radius:16px;padding:14px}
-    .week-label{color:#9c9c9c;font-size:13px;line-height:1.25}
+    .week-card,.goal-card{background:#191919;border:1px solid #303030;border-radius:16px;padding:14px}
+    .week-label,.goal-label{color:#9c9c9c;font-size:13px;line-height:1.25}
     .week-number{margin-top:8px;font-size:30px;font-weight:900;line-height:1}
-    .week-small{margin-top:7px;color:#a8a8a8;font-size:13px;line-height:1.25}
+    .week-small,.goal-small{margin-top:7px;color:#a8a8a8;font-size:13px;line-height:1.25}
     .week-positive{color:#78d37a}
     .week-negative{color:#ff7777}
     .week-neutral{color:#f0c36a}
     .week-conclusion{margin-top:12px;color:#cfcfcf;font-size:14px;line-height:1.4}
+
+    .goal-list{display:grid;grid-template-columns:1fr;gap:12px}
+    .goal-head{display:flex;justify-content:space-between;gap:12px;margin-bottom:12px}
+    .goal-name{font-size:18px;font-weight:800;line-height:1.2}
+    .goal-id{color:#a8a8a8;font-size:13px;margin-top:4px}
+    .goal-need{text-align:right}
+    .goal-need-number{font-size:34px;font-weight:900;line-height:1;color:#f0c36a}
+    .goal-status{margin-top:8px;color:#cfcfcf;font-size:13px;line-height:1.3}
+    .goal-status.warning{color:#ff9f68}
+    .goal-exercises{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px}
+    .goal-exercise{padding:10px;border-radius:12px;background:#111;border:1px solid #292929}
+    .goal-exercise-name{color:#cfcfcf;font-size:13px;line-height:1.25}
+    .goal-exercise-reps{margin-top:6px;font-size:22px;font-weight:900}
+    .goal-note{margin-top:12px;color:#a8a8a8;font-size:13px;line-height:1.35}
 
     @media(max-width:720px){
       .page{padding:22px 12px 46px}
@@ -104,7 +117,9 @@
       .modal-head{padding:18px 16px 12px}
       .modal-title{font-size:24px}
       .details-wrap{padding:0 16px 16px;overflow-x:auto}
-      .week-grid{grid-template-columns:1fr}
+      .week-grid,.goal-exercises{grid-template-columns:1fr}
+      .goal-head{display:block}
+      .goal-need{text-align:left;margin-top:12px}
       .details-table{display:table!important;min-width:620px}
       .details-table thead{display:table-header-group}
       .details-table tbody{display:table-row-group}
@@ -158,7 +173,7 @@
     </section>
 
     <div class="footer">
-      Рейтинг обновляется автоматически. Нажми на имя атлета, чтобы посмотреть тренировки, уровни и динамику по неделям.
+      Нажми на имя атлета, чтобы посмотреть тренировки, динамику по неделям и цель на сегодняшнюю тренировку.
     </div>
   </main>
 
@@ -178,9 +193,11 @@
   <script>
     const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853897&single=true&output=csv";
     const DETAILS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853898&single=true&output=csv";
+    const GOAL_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853899&single=true&output=csv";
 
     let ratingData = [];
     let detailsData = [];
+    let goalData = [];
 
     function parseCSV(text) {
       const rows = [];
@@ -242,33 +259,52 @@
         .replace(/'/g, "&#039;");
     }
 
-    function renderTable(ratingRows, detailRows) {
-      ratingData = ratingRows
-        .slice(1)
-        .filter(row => row[0] && row[1])
-        .map(row => ({
-          place: row[0],
-          name: row[1],
-          username: row[2] || "",
-          workouts: num(row[3]),
-          level: num(row[4]),
-          rank: row[5] || "",
-          key: row[6] || makeKey(row[1], row[2])
-        }));
+    function renderTable(ratingRows, detailRows, goalRows) {
+      ratingData = ratingRows.slice(1).filter(row => row[0] && row[1]).map(row => ({
+        place: row[0],
+        name: row[1],
+        username: row[2] || "",
+        workouts: num(row[3]),
+        level: num(row[4]),
+        rank: row[5] || "",
+        key: row[6] || makeKey(row[1], row[2])
+      }));
 
-      detailsData = detailRows
-        .slice(1)
-        .filter(row => row[0] && row[1])
-        .map(row => ({
-          key: row[0] || makeKey(row[1], row[2]),
-          name: row[1] || "",
-          username: row[2] || "",
-          date: row[3] || "",
-          workoutId: row[4] || "",
-          title: row[5] || "",
-          kettlebell: row[6] || "",
-          level: row[7] || ""
-        }));
+      detailsData = detailRows.slice(1).filter(row => row[0] && row[1]).map(row => ({
+        key: row[0] || makeKey(row[1], row[2]),
+        name: row[1] || "",
+        username: row[2] || "",
+        date: row[3] || "",
+        workoutId: row[4] || "",
+        title: row[5] || "",
+        kettlebell: row[6] || "",
+        level: row[7] || ""
+      }));
+
+      goalData = goalRows.slice(1).filter(row => row[0] && row[4]).map(row => ({
+        key: row[0],
+        name: row[1] || "",
+        username: row[2] || "",
+        date: row[3] || "",
+        workoutId: row[4] || "",
+        title: row[5] || "",
+        results: row[6] || "",
+        avgRaw: row[7] || "",
+        currentLevel: row[8] || "",
+        targetAverage: row[9] || "",
+        neededLevel: row[10] || "",
+        status: row[11] || "",
+        exercises: [
+          {name: row[12] || "", reps: row[13] || ""},
+          {name: row[14] || "", reps: row[15] || ""},
+          {name: row[16] || "", reps: row[17] || ""},
+          {name: row[18] || "", reps: row[19] || ""},
+          {name: row[20] || "", reps: row[21] || ""},
+          {name: row[22] || "", reps: row[23] || ""}
+        ].filter(item => item.name && item.reps),
+        rounds: row[24] || "",
+        note: row[25] || ""
+      }));
 
       renderRows(ratingData);
       updateStats(ratingData);
@@ -305,7 +341,6 @@
       const totalAthletes = data.length;
       const totalWorkouts = data.reduce((sum, item) => sum + item.workouts, 0);
       const ratedAthletes = data.filter(item => item.level > 0);
-
       const avgLevel = ratedAthletes.length
         ? Math.round(ratedAthletes.reduce((sum, item) => sum + item.level, 0) / ratedAthletes.length)
         : 0;
@@ -331,11 +366,8 @@
       );
 
       renderRows(filtered);
-
       searchInfo.style.display = "block";
-      searchInfo.textContent = filtered.length
-        ? `Найдено: ${filtered.length}`
-        : "Атлет не найден";
+      searchInfo.textContent = filtered.length ? `Найдено: ${filtered.length}` : "Атлет не найден";
     }
 
     function resetSearch() {
@@ -354,37 +386,23 @@
       const parts = String(dateValue || "").split(".");
       const day = Number(parts[0]);
       const month = Number(parts[1]);
-
       if (!day || month !== 8) return null;
-
       if (day >= 3 && day <= 9) return 1;
       if (day >= 10 && day <= 16) return 2;
       if (day >= 17 && day <= 23) return 3;
       if (day >= 24 && day <= 31) return 4;
-
       return null;
     }
 
     function getCurrentLeagueWeek() {
-      const weeks = detailsData
-        .map(item => getWeekNumber(item.date))
-        .filter(Boolean);
-
+      const weeks = detailsData.map(item => getWeekNumber(item.date)).filter(Boolean);
       return weeks.length ? Math.max(...weeks) : 1;
     }
 
     function getWeeklyAverage(workouts, weekNumber) {
       const weekItems = workouts.filter(item => getWeekNumber(item.date) === weekNumber);
       const levels = weekItems.map(item => num(item.level)).filter(level => level > 0);
-
-      if (!levels.length) {
-        return {
-          week: weekNumber,
-          count: 0,
-          average: null
-        };
-      }
-
+      if (!levels.length) return {week: weekNumber, count: 0, average: null};
       return {
         week: weekNumber,
         count: levels.length,
@@ -413,11 +431,9 @@
       if (!prev || !current || prev.average === null || current.average === null) {
         return "Динамика пока не считается: не хватает данных за одну из недель.";
       }
-
       if (prev.count < 2 || current.count < 2) {
         return "Динамика предварительная: за одну из недель сдано меньше 2 тренировок.";
       }
-
       if (diff >= 5) return "Вывод: уровень заметно растёт.";
       if (diff > 0) return "Вывод: есть рост, динамика положительная.";
       if (diff === 0) return "Вывод: уровень держится стабильно.";
@@ -428,42 +444,93 @@
     function renderWeeklyPanel(workouts) {
       const currentWeek = getCurrentLeagueWeek();
       const previousWeek = Math.max(1, currentWeek - 1);
-
       const prev = getWeeklyAverage(workouts, previousWeek);
       const current = getWeeklyAverage(workouts, currentWeek);
-
       const canCompare = prev.average !== null && current.average !== null;
       const diff = canCompare ? current.average - prev.average : null;
-
       const diffText = canCompare ? getDynamicsText(diff) : "—";
       const diffClass = canCompare ? getDynamicsClass(diff) : "week-neutral";
 
       return `
-        <div class="week-panel">
-          <div class="week-title">Динамика по неделям</div>
-
+        <div class="panel">
+          <div class="panel-title">Динамика по неделям</div>
           <div class="week-grid">
             <div class="week-card">
               <div class="week-label">Предыдущая неделя<br>Неделя ${previousWeek}</div>
               <div class="week-number">${formatWeekAverage(prev)}</div>
               <div class="week-small">${prev.count ? `${prev.count} тренировок` : "нет данных"}</div>
             </div>
-
             <div class="week-card">
               <div class="week-label">Текущая неделя<br>Неделя ${currentWeek}</div>
               <div class="week-number">${formatWeekAverage(current)}</div>
               <div class="week-small">${current.count ? `${current.count} тренировок` : "нет данных"}</div>
             </div>
-
             <div class="week-card">
               <div class="week-label">Динамика<br>неделя ${previousWeek} → неделя ${currentWeek}</div>
               <div class="week-number ${diffClass}">${diffText}</div>
               <div class="week-small">разница среднего уровня</div>
             </div>
           </div>
+          <div class="week-conclusion">${getWeekConclusion(prev, current, diff)}</div>
+        </div>
+      `;
+    }
 
-          <div class="week-conclusion">
-            ${getWeekConclusion(prev, current, diff)}
+    function renderGoalPanel(key) {
+      const goals = goalData.filter(item => item.key === key);
+
+      if (!goals.length) {
+        return `
+          <div class="panel">
+            <div class="panel-title">Цель на сегодня</div>
+            <div class="goal-small">На сегодня для этого участника цель не найдена. Возможно, сегодня нет тренировки или данные ещё обновляются.</div>
+          </div>
+        `;
+      }
+
+      return `
+        <div class="panel">
+          <div class="panel-title">Цель на сегодня</div>
+          <div class="goal-list">
+            ${goals.map(goal => {
+              const warning = String(goal.status).toLowerCase().includes("выше 99");
+              return `
+                <div class="goal-card">
+                  <div class="goal-head">
+                    <div>
+                      <div class="goal-name">${esc(goal.title)}</div>
+                      <div class="goal-id">${esc(goal.date)} · ${esc(goal.workoutId)} · ${esc(goal.rounds)} раундов / рабочих минут</div>
+                    </div>
+                    <div class="goal-need">
+                      <div class="goal-label">нужный уровень сегодня</div>
+                      <div class="goal-need-number">${esc(goal.neededLevel)}</div>
+                    </div>
+                  </div>
+
+                  <div class="goal-small">
+                    Сейчас: средний ${esc(goal.avgRaw)}, текущий уровень ${esc(goal.currentLevel)}.
+                    Цель: поднять средний до ${esc(goal.targetAverage)}.
+                  </div>
+
+                  <div class="goal-status ${warning ? "warning" : ""}">
+                    ${esc(goal.status)}
+                  </div>
+
+                  <div class="goal-exercises">
+                    ${goal.exercises.map(ex => `
+                      <div class="goal-exercise">
+                        <div class="goal-exercise-name">${esc(ex.name)}</div>
+                        <div class="goal-exercise-reps">${esc(ex.reps)}</div>
+                      </div>
+                    `).join("")}
+                  </div>
+
+                  <div class="goal-note">
+                    ${esc(goal.note)}. Это ориентир, а не приказ. Если техника разваливается - держи рабочий темп.
+                  </div>
+                </div>
+              `;
+            }).join("")}
           </div>
         </div>
       `;
@@ -496,11 +563,14 @@
       const content = document.getElementById("detailsContent");
 
       if (!workouts.length) {
-        content.innerHTML = '<div class="empty-details">По этому участнику детализация пока не найдена.</div>';
+        content.innerHTML = `
+          ${renderGoalPanel(key)}
+          <div class="empty-details">По этому участнику детализация пока не найдена.</div>
+        `;
       } else {
         content.innerHTML = `
+          ${renderGoalPanel(key)}
           ${renderWeeklyPanel(workouts)}
-
           <table class="details-table">
             <thead>
               <tr>
@@ -537,18 +607,22 @@
 
     async function loadRating() {
       try {
-        const [ratingResponse, detailsResponse] = await Promise.all([
-          fetch(`${CSV_URL}&cache=${Date.now()}`),
-          fetch(`${DETAILS_CSV_URL}&cache=${Date.now()}`)
+        const now = Date.now();
+        const [ratingResponse, detailsResponse, goalResponse] = await Promise.all([
+          fetch(`${CSV_URL}&cache=${now}`),
+          fetch(`${DETAILS_CSV_URL}&cache=${now}`),
+          fetch(`${GOAL_CSV_URL}&cache=${now}`)
         ]);
 
         if (!ratingResponse.ok) throw new Error("Не удалось загрузить основной рейтинг");
         if (!detailsResponse.ok) throw new Error("Не удалось загрузить детализацию");
+        if (!goalResponse.ok) throw new Error("Не удалось загрузить цель дня");
 
         const ratingText = await ratingResponse.text();
         const detailsText = await detailsResponse.text();
+        const goalText = await goalResponse.text();
 
-        renderTable(parseCSV(ratingText), parseCSV(detailsText));
+        renderTable(parseCSV(ratingText), parseCSV(detailsText), parseCSV(goalText));
       } catch (error) {
         document.getElementById("loading").className = "error";
         document.getElementById("loading").textContent =
@@ -558,13 +632,8 @@
     }
 
     document.addEventListener("keydown", event => {
-      if (event.key === "Enter" && document.activeElement.id === "searchInput") {
-        searchAthlete();
-      }
-
-      if (event.key === "Escape") {
-        closeAthleteDetails();
-      }
+      if (event.key === "Enter" && document.activeElement.id === "searchInput") searchAthlete();
+      if (event.key === "Escape") closeAthleteDetails();
     });
 
     document.getElementById("ratingBody").addEventListener("click", event => {
