@@ -4,63 +4,581 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Рейтинг ФОРМА20</title>
+
   <style>
-    *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:#f5f5f5}.page{max-width:1100px;margin:0 auto;padding:32px 16px 60px}.hero{text-align:center;margin-bottom:28px}.label{display:inline-block;padding:6px 12px;border:1px solid #3a3a3a;border-radius:999px;color:#bdbdbd;font-size:13px;margin-bottom:14px;letter-spacing:.08em;text-transform:uppercase}h1{margin:0;font-size:clamp(36px,7vw,72px);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}.subtitle{margin:18px auto 0;max-width:760px;color:#bdbdbd;font-size:18px;line-height:1.45}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 18px}.stat{background:#171717;border:1px solid #2a2a2a;border-radius:18px;padding:18px;text-align:center}.stat-number{font-size:30px;font-weight:800;color:#fff}.stat-text{margin-top:6px;color:#a8a8a8;font-size:14px}.search-box{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:0 0 18px}.search-input{width:100%;background:#151515;border:1px solid #2a2a2a;border-radius:14px;padding:14px 16px;color:#fff;font-size:16px;outline:0}.search-input::placeholder{color:#777}.search-button,.reset-button{border:1px solid #3a3a3a;border-radius:14px;padding:14px 18px;color:#fff;font-size:15px;font-weight:700;cursor:pointer}.search-button{background:#fff;color:#111}.reset-button{background:#202020}.search-info{margin:-6px 0 18px;color:#a8a8a8;font-size:14px;text-align:center;display:none}.table-wrap{overflow-x:auto;background:#151515;border:1px solid #292929;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}table{width:100%;border-collapse:collapse;min-width:760px}thead{background:#202020}th,td{padding:16px 14px;text-align:left;border-bottom:1px solid #282828;white-space:nowrap}th{color:#a8a8a8;font-size:13px;text-transform:uppercase;letter-spacing:.06em}td{font-size:16px}tbody tr:hover{background:#1d1d1d}.place,.level{font-size:20px;font-weight:800;color:#fff}.rank{display:inline-block;padding:6px 10px;border-radius:999px;background:#252525;color:#f2f2f2;border:1px solid #3a3a3a;font-size:14px}.athlete-button{margin:0;padding:0;border:0;background:transparent;color:#fff;font:inherit;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:#555;text-underline-offset:4px}.athlete-button:hover{color:#f0c36a;text-decoration-color:#f0c36a}.top-1{background:linear-gradient(90deg,rgba(255,193,7,.16),transparent)}.top-2{background:linear-gradient(90deg,rgba(190,190,190,.12),transparent)}.top-3{background:linear-gradient(90deg,rgba(205,127,50,.12),transparent)}.loading,.error{padding:28px;text-align:center;color:#bdbdbd}.footer{margin-top:22px;color:#8c8c8c;font-size:13px;text-align:center;line-height:1.45}.modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);z-index:1000}.modal-overlay.is-open{display:flex}.modal-card{width:min(920px,100%);max-height:88vh;overflow:auto;background:#151515;border:1px solid #343434;border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.55)}.modal-head{display:flex;gap:18px;justify-content:space-between;align-items:flex-start;padding:22px 22px 16px;border-bottom:1px solid #282828}.modal-title{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.03em}.modal-meta{margin-top:8px;color:#a8a8a8;font-size:14px;line-height:1.4}.modal-close{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid #3a3a3a;background:#202020;color:#fff;font-size:24px;line-height:1;cursor:pointer}.details-wrap{padding:0 22px 22px}.details-table{min-width:680px}.details-level{font-weight:800;font-size:18px}.empty-details{padding:22px;color:#bdbdbd}@media(max-width:720px){.page{padding:22px 12px 46px}.hero{margin-bottom:20px}.label{font-size:11px;padding:5px 10px;margin-bottom:12px}h1{font-size:clamp(34px,12vw,48px)}.subtitle{font-size:15px;line-height:1.38}.stats{grid-template-columns:repeat(3,1fr);gap:7px;margin:18px 0 14px}.stat{border-radius:14px;padding:10px 6px}.stat-number{font-size:19px;line-height:1}.stat-text{margin-top:5px;font-size:9.5px;line-height:1.15}.search-box{grid-template-columns:1fr;gap:8px;margin-bottom:14px}.search-input{padding:13px 14px;font-size:15px;border-radius:13px}.search-button,.reset-button{width:100%;padding:12px 14px;font-size:14px;border-radius:13px}.table-wrap{overflow:visible;background:transparent;border:0;border-radius:0;box-shadow:none}table{display:block!important;width:100%;min-width:0}thead{display:none}tbody{display:flex;flex-direction:column;gap:12px}tr{display:block;width:100%;padding:15px;background:#151515;border:1px solid #292929;border-radius:18px}tbody tr:hover{background:#151515}th,td{white-space:normal}td{display:flex;justify-content:space-between;gap:14px;padding:6px 0;border-bottom:0;font-size:15px;line-height:1.35}td::before{color:#8c8c8c;flex-shrink:0}td:nth-child(1)::before{content:"Место:"}td:nth-child(2)::before{content:"Имя:"}td:nth-child(3)::before{content:"Username:"}td:nth-child(4)::before{content:"Тренировок:"}td:nth-child(5)::before{content:"Уровень:"}td:nth-child(6)::before{content:"Ранг:"}td:nth-child(2){font-size:18px;font-weight:700}td:nth-child(3){color:#bdbdbd;word-break:break-word}td:nth-child(6){align-items:flex-start}.place,.level{font-size:18px}.rank{max-width:185px;text-align:right;white-space:normal;line-height:1.25}.footer{font-size:12px}.modal-overlay{align-items:flex-end;padding:10px}.modal-card{max-height:92vh;border-radius:20px}.modal-head{padding:18px 16px 12px}.modal-title{font-size:24px}.details-wrap{padding:0 16px 16px;overflow-x:auto}.details-table{display:table!important;min-width:620px}.details-table thead{display:table-header-group}.details-table tbody{display:table-row-group}.details-table tr{display:table-row;padding:0;border:0;border-radius:0;background:transparent}.details-table td,.details-table th{display:table-cell;white-space:nowrap;padding:12px 10px;border-bottom:1px solid #282828}.details-table td::before{content:none!important}}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:Arial,sans-serif;background:#0f0f0f;color:#f5f5f5}
+    .page{max-width:1100px;margin:0 auto;padding:32px 16px 60px}
+    .hero{text-align:center;margin-bottom:28px}
+    .label{display:inline-block;padding:6px 12px;border:1px solid #3a3a3a;border-radius:999px;color:#bdbdbd;font-size:13px;margin-bottom:14px;letter-spacing:.08em;text-transform:uppercase}
+    h1{margin:0;font-size:clamp(36px,7vw,72px);line-height:.95;letter-spacing:-.05em;text-transform:uppercase}
+    .subtitle{margin:18px auto 0;max-width:760px;color:#bdbdbd;font-size:18px;line-height:1.45}
+    .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:28px 0 18px}
+    .stat{background:#171717;border:1px solid #2a2a2a;border-radius:18px;padding:18px;text-align:center}
+    .stat-number{font-size:30px;font-weight:800;color:#fff}
+    .stat-text{margin-top:6px;color:#a8a8a8;font-size:14px}
+    .search-box{display:grid;grid-template-columns:1fr auto auto;gap:10px;margin:0 0 18px}
+    .search-input{width:100%;background:#151515;border:1px solid #2a2a2a;border-radius:14px;padding:14px 16px;color:#fff;font-size:16px;outline:0}
+    .search-input::placeholder{color:#777}
+    .search-button,.reset-button{border:1px solid #3a3a3a;border-radius:14px;padding:14px 18px;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+    .search-button{background:#fff;color:#111}
+    .reset-button{background:#202020}
+    .search-info{margin:-6px 0 18px;color:#a8a8a8;font-size:14px;text-align:center;display:none}
+    .table-wrap{overflow-x:auto;background:#151515;border:1px solid #292929;border-radius:22px;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+    table{width:100%;border-collapse:collapse;min-width:760px}
+    thead{background:#202020}
+    th,td{padding:16px 14px;text-align:left;border-bottom:1px solid #282828;white-space:nowrap}
+    th{color:#a8a8a8;font-size:13px;text-transform:uppercase;letter-spacing:.06em}
+    td{font-size:16px}
+    tbody tr:hover{background:#1d1d1d}
+    .place,.level{font-size:20px;font-weight:800;color:#fff}
+    .rank{display:inline-block;padding:6px 10px;border-radius:999px;background:#252525;color:#f2f2f2;border:1px solid #3a3a3a;font-size:14px}
+    .athlete-button{margin:0;padding:0;border:0;background:transparent;color:#fff;font:inherit;font-weight:700;cursor:pointer;text-align:left;text-decoration:underline;text-decoration-color:#555;text-underline-offset:4px}
+    .athlete-button:hover{color:#f0c36a;text-decoration-color:#f0c36a}
+    .top-1{background:linear-gradient(90deg,rgba(255,193,7,.16),transparent)}
+    .top-2{background:linear-gradient(90deg,rgba(190,190,190,.12),transparent)}
+    .top-3{background:linear-gradient(90deg,rgba(205,127,50,.12),transparent)}
+    .loading,.error{padding:28px;text-align:center;color:#bdbdbd}
+    .footer{margin-top:22px;color:#8c8c8c;font-size:13px;text-align:center;line-height:1.45}
+
+    .modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.72);z-index:1000}
+    .modal-overlay.is-open{display:flex}
+    .modal-card{width:min(940px,100%);max-height:88vh;overflow:auto;background:#151515;border:1px solid #343434;border-radius:24px;box-shadow:0 30px 90px rgba(0,0,0,.55)}
+    .modal-head{display:flex;gap:18px;justify-content:space-between;align-items:flex-start;padding:22px 22px 16px;border-bottom:1px solid #282828}
+    .modal-title{margin:0;font-size:28px;line-height:1.05;letter-spacing:-.03em}
+    .modal-meta{margin-top:8px;color:#a8a8a8;font-size:14px;line-height:1.4}
+    .modal-close{flex:0 0 auto;width:40px;height:40px;border-radius:50%;border:1px solid #3a3a3a;background:#202020;color:#fff;font-size:24px;line-height:1;cursor:pointer}
+    .details-wrap{padding:0 22px 22px}
+    .details-table{min-width:680px}
+    .details-level{font-weight:800;font-size:18px}
+    .empty-details{padding:22px;color:#bdbdbd}
+
+    .week-panel{margin:20px 0 18px;padding:18px;background:#101010;border:1px solid #2d2d2d;border-radius:18px}
+    .week-title{font-size:17px;font-weight:800;margin-bottom:14px;text-transform:uppercase;letter-spacing:.04em}
+    .week-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+    .week-card{background:#191919;border:1px solid #303030;border-radius:16px;padding:14px}
+    .week-label{color:#9c9c9c;font-size:13px;line-height:1.25}
+    .week-number{margin-top:8px;font-size:30px;font-weight:900;line-height:1}
+    .week-small{margin-top:7px;color:#a8a8a8;font-size:13px;line-height:1.25}
+    .week-positive{color:#78d37a}
+    .week-negative{color:#ff7777}
+    .week-neutral{color:#f0c36a}
+    .week-conclusion{margin-top:12px;color:#cfcfcf;font-size:14px;line-height:1.4}
+
+    @media(max-width:720px){
+      .page{padding:22px 12px 46px}
+      .hero{margin-bottom:20px}
+      .label{font-size:11px;padding:5px 10px;margin-bottom:12px}
+      h1{font-size:clamp(34px,12vw,48px)}
+      .subtitle{font-size:15px;line-height:1.38}
+      .stats{grid-template-columns:repeat(3,1fr);gap:7px;margin:18px 0 14px}
+      .stat{border-radius:14px;padding:10px 6px}
+      .stat-number{font-size:19px;line-height:1}
+      .stat-text{margin-top:5px;font-size:9.5px;line-height:1.15}
+      .search-box{grid-template-columns:1fr;gap:8px;margin-bottom:14px}
+      .search-input{padding:13px 14px;font-size:15px;border-radius:13px}
+      .search-button,.reset-button{width:100%;padding:12px 14px;font-size:14px;border-radius:13px}
+      .table-wrap{overflow:visible;background:transparent;border:0;border-radius:0;box-shadow:none}
+      table{display:block!important;width:100%;min-width:0}
+      thead{display:none}
+      tbody{display:flex;flex-direction:column;gap:12px}
+      tr{display:block;width:100%;padding:15px;background:#151515;border:1px solid #292929;border-radius:18px}
+      tbody tr:hover{background:#151515}
+      th,td{white-space:normal}
+      td{display:flex;justify-content:space-between;gap:14px;padding:6px 0;border-bottom:0;font-size:15px;line-height:1.35}
+      td::before{color:#8c8c8c;flex-shrink:0}
+      td:nth-child(1)::before{content:"Место:"}
+      td:nth-child(2)::before{content:"Имя:"}
+      td:nth-child(3)::before{content:"Username:"}
+      td:nth-child(4)::before{content:"Тренировок:"}
+      td:nth-child(5)::before{content:"Уровень:"}
+      td:nth-child(6)::before{content:"Ранг:"}
+      td:nth-child(2){font-size:18px;font-weight:700}
+      td:nth-child(3){color:#bdbdbd;word-break:break-word}
+      td:nth-child(6){align-items:flex-start}
+      .place,.level{font-size:18px}
+      .rank{max-width:185px;text-align:right;white-space:normal;line-height:1.25}
+      .footer{font-size:12px}
+      .modal-overlay{align-items:flex-end;padding:10px}
+      .modal-card{max-height:92vh;border-radius:20px}
+      .modal-head{padding:18px 16px 12px}
+      .modal-title{font-size:24px}
+      .details-wrap{padding:0 16px 16px;overflow-x:auto}
+      .week-grid{grid-template-columns:1fr}
+      .details-table{display:table!important;min-width:620px}
+      .details-table thead{display:table-header-group}
+      .details-table tbody{display:table-row-group}
+      .details-table tr{display:table-row;padding:0;border:0;border-radius:0;background:transparent}
+      .details-table td,.details-table th{display:table-cell;white-space:nowrap;padding:12px 10px;border-bottom:1px solid #282828}
+      .details-table td::before{content:none!important}
+    }
   </style>
 </head>
+
 <body>
   <main class="page">
     <section class="hero">
       <div class="label">Августовская лига</div>
       <h1>Рейтинг ФОРМА20</h1>
-      <p class="subtitle">Это рейтинг текущего уровня Атлетов ФОРМА20. Чем больше тренировок выполнено, тем точнее определяется уровень. В рейтинг входят Атлеты, выполнившие больше 3 тренировок.</p>
+      <p class="subtitle">
+        Это рейтинг текущего уровня Атлетов ФОРМА20. Чем больше тренировок выполнено, тем точнее определяется уровень.
+        В рейтинг входят Атлеты, выполнившие больше 3 тренировок.
+      </p>
     </section>
+
     <section class="stats">
       <div class="stat"><div class="stat-number" id="totalAthletes">-</div><div class="stat-text">участников в рейтинге</div></div>
       <div class="stat"><div class="stat-number" id="totalWorkouts">-</div><div class="stat-text">сданных тренировок</div></div>
       <div class="stat"><div class="stat-number" id="avgLevel">-</div><div class="stat-text">средний уровень лиги</div></div>
     </section>
+
     <section class="search-box">
       <input type="text" id="searchInput" class="search-input" placeholder="Введите имя атлета" />
       <button class="search-button" onclick="searchAthlete()">Найти</button>
       <button class="reset-button" onclick="resetSearch()">Сбросить</button>
     </section>
+
     <div id="searchInfo" class="search-info"></div>
+
     <section class="table-wrap">
       <div id="loading" class="loading">Загружаю рейтинг...</div>
       <table id="ratingTable" style="display:none;">
-        <thead><tr><th>Место</th><th>Имя</th><th>Username</th><th>Тренировок</th><th>Средний уровень</th><th>Ранг</th></tr></thead>
+        <thead>
+          <tr>
+            <th>Место</th>
+            <th>Имя</th>
+            <th>Username</th>
+            <th>Тренировок</th>
+            <th>Средний уровень</th>
+            <th>Ранг</th>
+          </tr>
+        </thead>
         <tbody id="ratingBody"></tbody>
       </table>
     </section>
-    <div class="footer">Рейтинг обновляется автоматически. Нажми на имя атлета, чтобы посмотреть сданные тренировки и уровни по каждой.</div>
+
+    <div class="footer">
+      Рейтинг обновляется автоматически. Нажми на имя атлета, чтобы посмотреть тренировки, уровни и динамику по неделям.
+    </div>
   </main>
+
   <div class="modal-overlay" id="detailsModal">
     <div class="modal-card">
       <div class="modal-head">
-        <div><h2 class="modal-title" id="modalName">Атлет</h2><div class="modal-meta" id="modalMeta"></div></div>
+        <div>
+          <h2 class="modal-title" id="modalName">Атлет</h2>
+          <div class="modal-meta" id="modalMeta"></div>
+        </div>
         <button class="modal-close" id="modalClose" type="button" aria-label="Закрыть">×</button>
       </div>
       <div class="details-wrap" id="detailsContent"></div>
     </div>
   </div>
+
   <script>
-    const CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853897&single=true&output=csv";
-    const DETAILS_CSV_URL="https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853898&single=true&output=csv";
-    let ratingData=[],detailsData=[];
-    function parseCSV(text){const rows=[];let row=[],cell="",q=false;for(let i=0;i<text.length;i++){const c=text[i],n=text[i+1];if(c==='"'&&q&&n==='"'){cell+='"';i++}else if(c==='"'){q=!q}else if(c===','&&!q){row.push(cell);cell=""}else if((c==='\n'||c==='\r')&&!q){if(cell||row.length){row.push(cell);rows.push(row);row=[];cell=""}if(c==='\r'&&n==='\n')i++}else{cell+=c}}if(cell||row.length){row.push(cell);rows.push(row)}return rows}
-    function norm(v){return String(v||"").trim().toLowerCase()}function makeKey(n,u){return `${norm(n)}|${norm(u)}`}function num(v){return Number(String(v||"0").replace(",","."))||0}
-    function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
-    function renderTable(ratingRows,detailRows){ratingData=ratingRows.slice(1).filter(r=>r[0]&&r[1]).map(r=>({place:r[0],name:r[1],username:r[2]||"",workouts:num(r[3]),level:num(r[4]),rank:r[5]||"",key:r[6]||makeKey(r[1],r[2])}));detailsData=detailRows.slice(1).filter(r=>r[0]&&r[1]).map(r=>({key:r[0]||makeKey(r[1],r[2]),name:r[1]||"",username:r[2]||"",date:r[3]||"",workoutId:r[4]||"",title:r[5]||"",kettlebell:r[6]||"",level:r[7]||""}));renderRows(ratingData);updateStats(ratingData);document.getElementById("loading").style.display="none";document.getElementById("ratingTable").style.display="table"}
-    function renderRows(data){const body=document.getElementById("ratingBody");body.innerHTML="";data.forEach(item=>{const tr=document.createElement("tr");if(String(item.place)==="1")tr.classList.add("top-1");if(String(item.place)==="2")tr.classList.add("top-2");if(String(item.place)==="3")tr.classList.add("top-3");tr.innerHTML=`<td class="place">${esc(item.place)}</td><td><button class="athlete-button" type="button" data-key="${esc(item.key)}">${esc(item.name)}</button></td><td>${esc(item.username)}</td><td>${esc(item.workouts)}</td><td class="level">${item.level>0?Math.round(item.level):"—"}</td><td><span class="rank">${esc(item.rank)}</span></td>`;body.appendChild(tr)})}
-    function updateStats(data){const totalAthletes=data.length,totalWorkouts=data.reduce((s,i)=>s+i.workouts,0),rated=data.filter(i=>i.level>0),avg=rated.length?Math.round(rated.reduce((s,i)=>s+i.level,0)/rated.length):0;document.getElementById("totalAthletes").textContent=totalAthletes;document.getElementById("totalWorkouts").textContent=totalWorkouts;document.getElementById("avgLevel").textContent=avg}
-    function searchAthlete(){const q=norm(document.getElementById("searchInput").value),info=document.getElementById("searchInfo");if(!q){renderRows(ratingData);info.style.display="none";return}const f=ratingData.filter(i=>norm(i.name).includes(q)||norm(i.username).includes(q));renderRows(f);info.style.display="block";info.textContent=f.length?`Найдено: ${f.length}`:"Атлет не найден"}
-    function resetSearch(){document.getElementById("searchInput").value="";document.getElementById("searchInfo").style.display="none";renderRows(ratingData)}
-    function dateOrder(v){const p=String(v||"").split(".");return p.length<2?0:(Number(p[1])||0)*100+(Number(p[0])||0)}function weight(v){const n=num(v);return n>0?`${esc(v)} кг`:"—"}
-    function openAthleteDetails(key){const athlete=ratingData.find(i=>i.key===key),workouts=detailsData.filter(i=>i.key===key).sort((a,b)=>dateOrder(a.date)-dateOrder(b.date)||String(a.workoutId).localeCompare(String(b.workoutId)));if(!athlete)return;document.getElementById("modalName").textContent=athlete.name;document.getElementById("modalMeta").textContent=[athlete.username?`@${athlete.username}`:"username не указан",`${athlete.workouts} тренировок`,`средний уровень ${Math.round(athlete.level)}`,athlete.rank].filter(Boolean).join(" · ");const c=document.getElementById("detailsContent");if(!workouts.length){c.innerHTML='<div class="empty-details">По этому участнику детализация пока не найдена.</div>'}else{c.innerHTML=`<table class="details-table"><thead><tr><th>Дата</th><th>ID</th><th>Тренировка</th><th>Гиря</th><th>Уровень</th></tr></thead><tbody>${workouts.map(i=>`<tr><td>${esc(i.date)}</td><td>${esc(i.workoutId)}</td><td>${esc(i.title)}</td><td>${weight(i.kettlebell)}</td><td class="details-level">${esc(i.level)}</td></tr>`).join("")}</tbody></table>`}document.getElementById("detailsModal").classList.add("is-open");document.body.style.overflow="hidden"}
-    function closeAthleteDetails(){document.getElementById("detailsModal").classList.remove("is-open");document.body.style.overflow=""}
-    async function loadRating(){try{const [r,d]=await Promise.all([fetch(`${CSV_URL}&cache=${Date.now()}`),fetch(`${DETAILS_CSV_URL}&cache=${Date.now()}`)]);if(!r.ok)throw new Error("Не удалось загрузить основной рейтинг");if(!d.ok)throw new Error("Не удалось загрузить детализацию");renderTable(parseCSV(await r.text()),parseCSV(await d.text()))}catch(e){document.getElementById("loading").className="error";document.getElementById("loading").textContent="Не удалось загрузить рейтинг. Проверь, что Google-таблица опубликована в интернете как CSV.";console.error(e)}}
-    document.addEventListener("keydown",e=>{if(e.key==="Enter"&&document.activeElement.id==="searchInput")searchAthlete();if(e.key==="Escape")closeAthleteDetails()});document.getElementById("ratingBody").addEventListener("click",e=>{const b=e.target.closest(".athlete-button");if(b)openAthleteDetails(b.dataset.key)});document.getElementById("modalClose").addEventListener("click",closeAthleteDetails);document.getElementById("detailsModal").addEventListener("click",e=>{if(e.target.id==="detailsModal")closeAthleteDetails()});loadRating();
+    const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853897&single=true&output=csv";
+    const DETAILS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853898&single=true&output=csv";
+
+    let ratingData = [];
+    let detailsData = [];
+
+    function parseCSV(text) {
+      const rows = [];
+      let row = [];
+      let cell = "";
+      let insideQuotes = false;
+
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        const nextChar = text[i + 1];
+
+        if (char === '"' && insideQuotes && nextChar === '"') {
+          cell += '"';
+          i++;
+        } else if (char === '"') {
+          insideQuotes = !insideQuotes;
+        } else if (char === "," && !insideQuotes) {
+          row.push(cell);
+          cell = "";
+        } else if ((char === "\n" || char === "\r") && !insideQuotes) {
+          if (cell || row.length) {
+            row.push(cell);
+            rows.push(row);
+            row = [];
+            cell = "";
+          }
+          if (char === "\r" && nextChar === "\n") i++;
+        } else {
+          cell += char;
+        }
+      }
+
+      if (cell || row.length) {
+        row.push(cell);
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function norm(value) {
+      return String(value || "").trim().toLowerCase();
+    }
+
+    function makeKey(name, username) {
+      return `${norm(name)}|${norm(username)}`;
+    }
+
+    function num(value) {
+      return Number(String(value || "0").replace(",", ".")) || 0;
+    }
+
+    function esc(value) {
+      return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function renderTable(ratingRows, detailRows) {
+      ratingData = ratingRows
+        .slice(1)
+        .filter(row => row[0] && row[1])
+        .map(row => ({
+          place: row[0],
+          name: row[1],
+          username: row[2] || "",
+          workouts: num(row[3]),
+          level: num(row[4]),
+          rank: row[5] || "",
+          key: row[6] || makeKey(row[1], row[2])
+        }));
+
+      detailsData = detailRows
+        .slice(1)
+        .filter(row => row[0] && row[1])
+        .map(row => ({
+          key: row[0] || makeKey(row[1], row[2]),
+          name: row[1] || "",
+          username: row[2] || "",
+          date: row[3] || "",
+          workoutId: row[4] || "",
+          title: row[5] || "",
+          kettlebell: row[6] || "",
+          level: row[7] || ""
+        }));
+
+      renderRows(ratingData);
+      updateStats(ratingData);
+
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("ratingTable").style.display = "table";
+    }
+
+    function renderRows(data) {
+      const body = document.getElementById("ratingBody");
+      body.innerHTML = "";
+
+      data.forEach(item => {
+        const tr = document.createElement("tr");
+
+        if (String(item.place) === "1") tr.classList.add("top-1");
+        if (String(item.place) === "2") tr.classList.add("top-2");
+        if (String(item.place) === "3") tr.classList.add("top-3");
+
+        tr.innerHTML = `
+          <td class="place">${esc(item.place)}</td>
+          <td><button class="athlete-button" type="button" data-key="${esc(item.key)}">${esc(item.name)}</button></td>
+          <td>${esc(item.username)}</td>
+          <td>${esc(item.workouts)}</td>
+          <td class="level">${item.level > 0 ? Math.round(item.level) : "—"}</td>
+          <td><span class="rank">${esc(item.rank)}</span></td>
+        `;
+
+        body.appendChild(tr);
+      });
+    }
+
+    function updateStats(data) {
+      const totalAthletes = data.length;
+      const totalWorkouts = data.reduce((sum, item) => sum + item.workouts, 0);
+      const ratedAthletes = data.filter(item => item.level > 0);
+
+      const avgLevel = ratedAthletes.length
+        ? Math.round(ratedAthletes.reduce((sum, item) => sum + item.level, 0) / ratedAthletes.length)
+        : 0;
+
+      document.getElementById("totalAthletes").textContent = totalAthletes;
+      document.getElementById("totalWorkouts").textContent = totalWorkouts;
+      document.getElementById("avgLevel").textContent = avgLevel;
+    }
+
+    function searchAthlete() {
+      const query = norm(document.getElementById("searchInput").value);
+      const searchInfo = document.getElementById("searchInfo");
+
+      if (!query) {
+        renderRows(ratingData);
+        searchInfo.style.display = "none";
+        return;
+      }
+
+      const filtered = ratingData.filter(item =>
+        norm(item.name).includes(query) ||
+        norm(item.username).includes(query)
+      );
+
+      renderRows(filtered);
+
+      searchInfo.style.display = "block";
+      searchInfo.textContent = filtered.length
+        ? `Найдено: ${filtered.length}`
+        : "Атлет не найден";
+    }
+
+    function resetSearch() {
+      document.getElementById("searchInput").value = "";
+      document.getElementById("searchInfo").style.display = "none";
+      renderRows(ratingData);
+    }
+
+    function dateOrder(value) {
+      const parts = String(value || "").split(".");
+      if (parts.length < 2) return 0;
+      return (Number(parts[1]) || 0) * 100 + (Number(parts[0]) || 0);
+    }
+
+    function getWeekNumber(dateValue) {
+      const parts = String(dateValue || "").split(".");
+      const day = Number(parts[0]);
+      const month = Number(parts[1]);
+
+      if (!day || month !== 8) return null;
+
+      if (day >= 3 && day <= 9) return 1;
+      if (day >= 10 && day <= 16) return 2;
+      if (day >= 17 && day <= 23) return 3;
+      if (day >= 24 && day <= 31) return 4;
+
+      return null;
+    }
+
+    function getCurrentLeagueWeek() {
+      const weeks = detailsData
+        .map(item => getWeekNumber(item.date))
+        .filter(Boolean);
+
+      return weeks.length ? Math.max(...weeks) : 1;
+    }
+
+    function getWeeklyAverage(workouts, weekNumber) {
+      const weekItems = workouts.filter(item => getWeekNumber(item.date) === weekNumber);
+      const levels = weekItems.map(item => num(item.level)).filter(level => level > 0);
+
+      if (!levels.length) {
+        return {
+          week: weekNumber,
+          count: 0,
+          average: null
+        };
+      }
+
+      return {
+        week: weekNumber,
+        count: levels.length,
+        average: Math.round(levels.reduce((sum, level) => sum + level, 0) / levels.length)
+      };
+    }
+
+    function formatWeekAverage(data) {
+      if (!data || data.average === null) return "—";
+      return data.average;
+    }
+
+    function getDynamicsClass(diff) {
+      if (diff > 0) return "week-positive";
+      if (diff < 0) return "week-negative";
+      return "week-neutral";
+    }
+
+    function getDynamicsText(diff) {
+      if (diff > 0) return `+${diff}`;
+      if (diff < 0) return String(diff);
+      return "0";
+    }
+
+    function getWeekConclusion(prev, current, diff) {
+      if (!prev || !current || prev.average === null || current.average === null) {
+        return "Динамика пока не считается: не хватает данных за одну из недель.";
+      }
+
+      if (prev.count < 2 || current.count < 2) {
+        return "Динамика предварительная: за одну из недель сдано меньше 2 тренировок.";
+      }
+
+      if (diff >= 5) return "Вывод: уровень заметно растёт.";
+      if (diff > 0) return "Вывод: есть рост, динамика положительная.";
+      if (diff === 0) return "Вывод: уровень держится стабильно.";
+      if (diff > -5) return "Вывод: есть небольшая просадка, нужно смотреть следующие тренировки.";
+      return "Вывод: есть заметная просадка по сравнению с прошлой неделей.";
+    }
+
+    function renderWeeklyPanel(workouts) {
+      const currentWeek = getCurrentLeagueWeek();
+      const previousWeek = Math.max(1, currentWeek - 1);
+
+      const prev = getWeeklyAverage(workouts, previousWeek);
+      const current = getWeeklyAverage(workouts, currentWeek);
+
+      const canCompare = prev.average !== null && current.average !== null;
+      const diff = canCompare ? current.average - prev.average : null;
+
+      const diffText = canCompare ? getDynamicsText(diff) : "—";
+      const diffClass = canCompare ? getDynamicsClass(diff) : "week-neutral";
+
+      return `
+        <div class="week-panel">
+          <div class="week-title">Динамика по неделям</div>
+
+          <div class="week-grid">
+            <div class="week-card">
+              <div class="week-label">Предыдущая неделя<br>Неделя ${previousWeek}</div>
+              <div class="week-number">${formatWeekAverage(prev)}</div>
+              <div class="week-small">${prev.count ? `${prev.count} тренировок` : "нет данных"}</div>
+            </div>
+
+            <div class="week-card">
+              <div class="week-label">Текущая неделя<br>Неделя ${currentWeek}</div>
+              <div class="week-number">${formatWeekAverage(current)}</div>
+              <div class="week-small">${current.count ? `${current.count} тренировок` : "нет данных"}</div>
+            </div>
+
+            <div class="week-card">
+              <div class="week-label">Динамика<br>неделя ${previousWeek} → неделя ${currentWeek}</div>
+              <div class="week-number ${diffClass}">${diffText}</div>
+              <div class="week-small">разница среднего уровня</div>
+            </div>
+          </div>
+
+          <div class="week-conclusion">
+            ${getWeekConclusion(prev, current, diff)}
+          </div>
+        </div>
+      `;
+    }
+
+    function weight(value) {
+      const n = num(value);
+      return n > 0 ? `${esc(value)} кг` : "—";
+    }
+
+    function openAthleteDetails(key) {
+      const athlete = ratingData.find(item => item.key === key);
+      const workouts = detailsData
+        .filter(item => item.key === key)
+        .sort((a, b) =>
+          dateOrder(a.date) - dateOrder(b.date) ||
+          String(a.workoutId).localeCompare(String(b.workoutId))
+        );
+
+      if (!athlete) return;
+
+      document.getElementById("modalName").textContent = athlete.name;
+      document.getElementById("modalMeta").textContent = [
+        athlete.username ? `@${athlete.username}` : "username не указан",
+        `${athlete.workouts} тренировок`,
+        `средний уровень ${Math.round(athlete.level)}`,
+        athlete.rank
+      ].filter(Boolean).join(" · ");
+
+      const content = document.getElementById("detailsContent");
+
+      if (!workouts.length) {
+        content.innerHTML = '<div class="empty-details">По этому участнику детализация пока не найдена.</div>';
+      } else {
+        content.innerHTML = `
+          ${renderWeeklyPanel(workouts)}
+
+          <table class="details-table">
+            <thead>
+              <tr>
+                <th>Дата</th>
+                <th>ID</th>
+                <th>Тренировка</th>
+                <th>Гиря</th>
+                <th>Уровень</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${workouts.map(item => `
+                <tr>
+                  <td>${esc(item.date)}</td>
+                  <td>${esc(item.workoutId)}</td>
+                  <td>${esc(item.title)}</td>
+                  <td>${weight(item.kettlebell)}</td>
+                  <td class="details-level">${esc(item.level)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        `;
+      }
+
+      document.getElementById("detailsModal").classList.add("is-open");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeAthleteDetails() {
+      document.getElementById("detailsModal").classList.remove("is-open");
+      document.body.style.overflow = "";
+    }
+
+    async function loadRating() {
+      try {
+        const [ratingResponse, detailsResponse] = await Promise.all([
+          fetch(`${CSV_URL}&cache=${Date.now()}`),
+          fetch(`${DETAILS_CSV_URL}&cache=${Date.now()}`)
+        ]);
+
+        if (!ratingResponse.ok) throw new Error("Не удалось загрузить основной рейтинг");
+        if (!detailsResponse.ok) throw new Error("Не удалось загрузить детализацию");
+
+        const ratingText = await ratingResponse.text();
+        const detailsText = await detailsResponse.text();
+
+        renderTable(parseCSV(ratingText), parseCSV(detailsText));
+      } catch (error) {
+        document.getElementById("loading").className = "error";
+        document.getElementById("loading").textContent =
+          "Не удалось загрузить рейтинг. Проверь, что Google-таблица опубликована в интернете как CSV.";
+        console.error(error);
+      }
+    }
+
+    document.addEventListener("keydown", event => {
+      if (event.key === "Enter" && document.activeElement.id === "searchInput") {
+        searchAthlete();
+      }
+
+      if (event.key === "Escape") {
+        closeAthleteDetails();
+      }
+    });
+
+    document.getElementById("ratingBody").addEventListener("click", event => {
+      const button = event.target.closest(".athlete-button");
+      if (button) openAthleteDetails(button.dataset.key);
+    });
+
+    document.getElementById("modalClose").addEventListener("click", closeAthleteDetails);
+
+    document.getElementById("detailsModal").addEventListener("click", event => {
+      if (event.target.id === "detailsModal") closeAthleteDetails();
+    });
+
+    loadRating();
   </script>
 </body>
 </html>
