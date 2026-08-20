@@ -13,7 +13,8 @@
   --line:#2d2d2d;
   --muted:#a8a8a8;
   --text:#f5f5f5;
-  --accent:#f0c36a;
+  --accent:#f0a020;
+  --accent-soft:#f0c36a;
   --green:#78d37a;
   --red:#ff7777;
 }
@@ -80,20 +81,21 @@ h1{
   justify-content:space-between;
 }
 .stat-kicker{
-  color:var(--muted);
+  color:var(--accent);
   font-size:10px;
   line-height:1.12;
   text-transform:uppercase;
   letter-spacing:.04em;
+  font-weight:800;
 }
 .stat-name{
   margin-top:8px;
   font-size:18px;
   font-weight:1000;
-  line-height:1.05;
+  line-height:.98;
   color:#fff;
-  word-break:break-word;
-  overflow-wrap:anywhere;
+  word-break:normal;
+  overflow-wrap:normal;
 }
 .stat-number{
   margin-top:8px;
@@ -171,7 +173,7 @@ h1{
   box-shadow:0 18px 46px rgba(0,0,0,.24);
 }
 .athlete-card:hover{border-color:#4b4b4b}
-.top-1{background:linear-gradient(90deg,rgba(240,195,106,.18),#151515)}
+.top-1{background:linear-gradient(90deg,rgba(240,160,32,.18),#151515)}
 .top-2{background:linear-gradient(90deg,rgba(220,220,220,.12),#151515)}
 .top-3{background:linear-gradient(90deg,rgba(205,127,50,.14),#151515)}
 .place-box{
@@ -309,6 +311,7 @@ h1{
   margin-bottom:14px;
   text-transform:uppercase;
   letter-spacing:.045em;
+  color:var(--accent);
 }
 .profile-grid,.week-grid{
   display:grid;
@@ -364,7 +367,7 @@ h1{
   line-height:1.45;
 }
 .goal-number{
-  color:var(--accent);
+  color:var(--accent-soft);
   font-size:34px;
   font-weight:1000;
   line-height:1;
@@ -407,7 +410,7 @@ h1{
 }
 .week-positive{color:var(--green)}
 .week-negative{color:var(--red)}
-.week-neutral{color:var(--accent)}
+.week-neutral{color:var(--accent-soft)}
 .week-conclusion{
   margin-top:12px;
   color:#cfcfcf;
@@ -454,7 +457,6 @@ h1{
     line-height:1.38;
   }
 
-  /* На мобильной версии тоже строго один ряд */
   .stats{
     grid-template-columns:repeat(4,minmax(0,1fr));
     gap:4px;
@@ -473,7 +475,7 @@ h1{
   .stat-name{
     margin-top:6px;
     font-size:10.5px;
-    line-height:1.05;
+    line-height:.98;
   }
   .stat-number{
     margin-top:6px;
@@ -625,6 +627,7 @@ const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil
 const DETAILS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853898&single=true&output=csv";
 const GOAL_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG/pub?gid=345853899&single=true&output=csv";
 const BOT_URL = "https://t.me/forma20_bot";
+const MIN_WORKOUTS_FOR_GROWTH = 4;
 
 let ratingData = [];
 let detailsData = [];
@@ -698,6 +701,16 @@ function esc(value) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#039;");
+}
+
+function formatStatName(name) {
+  const clean = String(name || "").trim();
+  if (!clean || clean === "-") return "-";
+
+  const parts = clean.split(/\s+/);
+  if (parts.length === 1) return esc(clean);
+
+  return esc(parts[0]) + "<br>" + esc(parts.slice(1).join(" "));
 }
 
 function renderTable(ratingRows, detailRows, goalRows) {
@@ -792,7 +805,7 @@ function statName(item) {
 }
 
 function setStat(nameId, valueId, name, value) {
-  document.getElementById(nameId).textContent = name || "-";
+  document.getElementById(nameId).innerHTML = formatStatName(name);
   document.getElementById(valueId).textContent = value || "-";
 }
 
@@ -849,6 +862,10 @@ function getGrowthLeader() {
 
   ratingData.forEach(athlete => {
     const workouts = detailsData.filter(item => item.key === athlete.key);
+    const totalSubmitted = Math.max(athlete.workouts, workouts.length);
+
+    if (totalSubmitted < MIN_WORKOUTS_FOR_GROWTH) return;
+
     const prev = getWeeklyAverage(workouts, previousWeek);
     const current = getWeeklyAverage(workouts, currentWeek);
 
@@ -867,7 +884,8 @@ function getGrowthLeader() {
         ...athlete,
         diff,
         currentAverage: current.average,
-        currentCount: current.count
+        currentCount: current.count,
+        totalSubmitted
       };
     }
   });
@@ -927,7 +945,7 @@ function updateStats(data) {
     "growthLeaderName",
     "growthLeaderValue",
     statName(growthLeader),
-    growthLeader ? `+${growthLeader.diff} уровней за неделю` : "нет данных"
+    growthLeader ? `+${growthLeader.diff} уровней за неделю` : "только 4+ тренировок"
   );
 
   setStat(
