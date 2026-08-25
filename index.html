@@ -163,7 +163,7 @@ h1{
 
 .toolbar{
   display:grid;
-  grid-template-columns:1fr auto;
+  grid-template-columns:1fr auto auto;
   gap:10px;
   margin-bottom:16px;
 }
@@ -192,6 +192,10 @@ h1{
   font-size:15px;
   font-weight:800;
   cursor:pointer;
+}
+
+.reset-button:hover{
+  border-color:#555;
 }
 
 .search-info{
@@ -954,9 +958,11 @@ h1{
     <section class="toolbar">
       <input type="text" id="searchInput" class="search-input" placeholder="Введите имя или username">
       <button class="reset-button" type="button" onclick="resetSearch()">Сбросить</button>
+      <button class="reset-button" type="button" onclick="loadRating(true)">Обновить рейтинг</button>
     </section>
 
     <div id="searchInfo" class="search-info"></div>
+    <div id="lastUpdated" class="search-info" style="display:block">Обновляю данные...</div>
     <div id="loading" class="loading">Загружаю рейтинг...</div>
     <section id="ratingList" class="rating-list" style="display:none"></section>
 
@@ -1025,7 +1031,6 @@ h1{
       </div>
 
       <div class="start-badge">СТАРТ РЕЙТИНГА - 1 СЕНТЯБРЯ</div>
-
     </article>
   </section>
 </main>
@@ -1050,15 +1055,18 @@ const GOAL_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRuaKirhMY
 const SEPTEMBER_CSV_URL = "data/forma20_september.csv";
 const BOT_URL = "https://t.me/forma20_bot";
 const MIN_WORKOUTS_FOR_GROWTH = 4;
+const AUTO_REFRESH_MS = 60000;
 
 let ratingData = [];
 let detailsData = [];
 let goalData = [];
+let isLoadingRating = false;
 
 const loading = document.getElementById("loading");
 const ratingList = document.getElementById("ratingList");
 const searchInput = document.getElementById("searchInput");
 const searchInfo = document.getElementById("searchInfo");
+const lastUpdated = document.getElementById("lastUpdated");
 const detailsModal = document.getElementById("detailsModal");
 const modalClose = document.getElementById("modalClose");
 const modalName = document.getElementById("modalName");
@@ -1184,8 +1192,13 @@ function renderTable(ratingRows, detailRows, goalRows) {
       status: row[11] || ""
     }));
 
-  renderRows(ratingData);
   updateStats(ratingData);
+
+  if (searchInput && searchInput.value.trim()) {
+    searchAthlete();
+  } else {
+    renderRows(ratingData);
+  }
 
   loading.style.display = "none";
   ratingList.style.display = "grid";
@@ -1636,18 +1649,26 @@ function switchTab(tab) {
   } else {
     label.textContent = "РЕЙТИНГ СЕНТЯБРЯ";
     title.textContent = "РЕЙТИНГ СЕНТЯБРЯ";
-    subtitle.textContent = "Отдельный месячный зачёт ФОРМА20. На первом этапе здесь показаны анонс, правила и призы. Таблица сентября будет подключена отдельным источником данных.";
+    subtitle.textContent = "Отдельный месячный зачёт ФОРМА20. Участники начинают с нуля, очки начисляются за полностью выполненные тренировки сентября.";
   }
 }
 
-async function loadRating() {
+async function loadRating(manual = false) {
+  if (isLoadingRating) return;
+
   try {
+    isLoadingRating = true;
     const now = Date.now();
 
+    if (manual && lastUpdated) {
+      lastUpdated.style.display = "block";
+      lastUpdated.textContent = "Обновляю рейтинг...";
+    }
+
     const [ratingResponse, detailsResponse, goalResponse] = await Promise.all([
-      fetch(`${CSV_URL}&cache=${now}`),
-      fetch(`${DETAILS_CSV_URL}&cache=${now}`),
-      fetch(`${GOAL_CSV_URL}&cache=${now}`)
+      fetch(`${CSV_URL}&cache=${now}`, { cache: "no-store" }),
+      fetch(`${DETAILS_CSV_URL}&cache=${now}`, { cache: "no-store" }),
+      fetch(`${GOAL_CSV_URL}&cache=${now}`, { cache: "no-store" })
     ]);
 
     if (!ratingResponse.ok) throw new Error("Не удалось загрузить основной рейтинг");
@@ -1659,10 +1680,28 @@ async function loadRating() {
     const goalText = await goalResponse.text();
 
     renderTable(parseCSV(ratingText), parseCSV(detailsText), parseCSV(goalText));
+
+    if (lastUpdated) {
+      const time = new Date().toLocaleTimeString("ru-RU", {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+
+      lastUpdated.style.display = "block";
+      lastUpdated.textContent = `Обновлено: ${time}`;
+    }
   } catch (error) {
     loading.className = "error";
     loading.textContent = "Не удалось загрузить рейтинг. Проверь, что Google-таблица опубликована как CSV.";
+
+    if (lastUpdated) {
+      lastUpdated.style.display = "block";
+      lastUpdated.textContent = "Ошибка обновления данных";
+    }
+
     console.error(error);
+  } finally {
+    isLoadingRating = false;
   }
 }
 
@@ -1689,6 +1728,12 @@ document.querySelectorAll(".tab-button").forEach(button => {
 
 switchTab("general");
 loadRating();
+
+setInterval(() => {
+  if (document.visibilityState === "visible") {
+    loadRating();
+  }
+}, AUTO_REFRESH_MS);
 </script>
 </body>
 </html>
