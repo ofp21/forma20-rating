@@ -34,13 +34,17 @@ h1{margin:0;font-size:clamp(36px,7vw,72px);line-height:.92;letter-spacing:-.055e
 </main>
 <div class="modal-overlay" id="detailsModal"><div class="modal-card"><div class="modal-head"><div><h2 class="modal-title" id="modalName">Атлет</h2><div class="modal-meta" id="modalMeta"></div></div><button class="modal-close" id="modalClose" type="button" aria-label="Закрыть">×</button></div><div class="modal-body" id="detailsContent"></div></div></div>
 <script>
-const PUB_ID="2PACX-1vRuaKirhMYNIqil8v9vUsCvdWDE_nscZQH0KE0F0omT5rdYfXF0hgO80OgdzBJFs_3ZsOvgC_iWFyQG";
-const GVIZ_BASE=`https://docs.google.com/spreadsheets/d/e/${PUB_ID}/gviz/tq?tqx=out:csv&gid=`;
-const PUB_BASE=`https://docs.google.com/spreadsheets/d/e/${PUB_ID}/pub?single=true&output=csv&gid=`;
-const SOURCES={rating:[GVIZ_BASE+"345853897",PUB_BASE+"345853897"],details:[GVIZ_BASE+"345853898",PUB_BASE+"345853898"],goal:[GVIZ_BASE+"345853899",PUB_BASE+"345853899"],september:[GVIZ_BASE+"2026090104",PUB_BASE+"2026090104"]};
+const API_URL="https://script.google.com/macros/s/AKfycbxNyHDJ6MdFJHn4eXk3AIvL8hEc_hWEX5Jw63KyHf770VtEWNsxnSwAJuMZ7lMtex36/exec";
 const BOT_URL="https://t.me/forma20_bot";const AUTO_REFRESH_MS=60000;let ratingData=[],detailsData=[],goalData=[],septemberData=[];let isLoadingRating=false,isLoadingSeptember=false;
 const $=id=>document.getElementById(id);const loading=$("loading"),ratingList=$("ratingList"),searchInput=$("searchInput"),searchInfo=$("searchInfo"),lastUpdated=$("lastUpdated"),detailsModal=$("detailsModal"),modalClose=$("modalClose"),modalName=$("modalName"),modalMeta=$("modalMeta"),detailsContent=$("detailsContent"),totalAthletes=$("totalAthletes"),septemberSearchInput=$("septemberSearchInput"),septemberSearchInfo=$("septemberSearchInfo"),septemberLastUpdated=$("septemberLastUpdated"),septemberLoading=$("septemberLoading"),septemberList=$("septemberList");
-function addCache(url){return url+(url.includes("?")?"&":"?")+"cache="+Date.now()}async function fetchFreshCsv(urls){let lastError=null;for(const url of urls){try{const response=await fetch(addCache(url),{cache:"no-store"});if(!response.ok)throw new Error(`HTTP ${response.status}`);const text=await response.text();const clean=text.trim();if(!clean||clean.startsWith("<")||clean.toLowerCase().includes("google visualization api query"))throw new Error("not csv");return text}catch(e){lastError=e}}throw lastError||new Error("CSV loading error")}
+async function fetchApi(dataset){
+  const url=API_URL+"?dataset="+encodeURIComponent(dataset)+"&cache="+Date.now();
+  const response=await fetch(url,{cache:"no-store",redirect:"follow"});
+  if(!response.ok)throw new Error(`HTTP ${response.status}`);
+  const payload=await response.json();
+  if(!payload||payload.ok!==true||!payload.data)throw new Error(payload&&payload.error?payload.error:"Некорректный ответ API");
+  return payload;
+}
 function parseCSV(text){const rows=[];let row=[],cell="",inside=false;for(let i=0;i<text.length;i++){const ch=text[i],next=text[i+1];if(ch==='"'&&inside&&next==='"'){cell+='"';i++}else if(ch==='"'){inside=!inside}else if(ch===","&&!inside){row.push(cell);cell=""}else if((ch==="\n"||ch==="\r")&&!inside){if(cell||row.length){row.push(cell);rows.push(row);row=[];cell=""}if(ch==="\r"&&next==="\n")i++}else{cell+=ch}}if(cell||row.length){row.push(cell);rows.push(row)}return rows}
 function norm(v){return String(v||"").trim().toLowerCase()}function makeKey(name,username){return `${norm(name)}|${norm(username)}`}function num(v){return Number(String(v||"0").replace(",","."))||0}function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}function formatStatName(name){const clean=String(name||"").trim();if(!clean||clean==="-")return "-";const parts=clean.split(/\s+/);return parts.length===1?esc(clean):esc(parts[0])+"<br>"+esc(parts.slice(1).join(" "))}function setStat(nameId,valueId,name,value){$(nameId).innerHTML=formatStatName(name);$(valueId).textContent=value||"-"}
 function getDayMonth(value){const p=String(value||"").split(".");return{day:Number(p[0])||0,month:Number(p[1])||0}}function getWeekNumber(value){const d=getDayMonth(value);if(!d.day)return null;if(d.month===8){if(d.day>=3&&d.day<=9)return 1;if(d.day>=10&&d.day<=16)return 2;if(d.day>=17&&d.day<=23)return 3;if(d.day>=24&&d.day<=31)return 4}return Math.ceil(d.day/7)}
@@ -51,8 +55,48 @@ function searchAthlete(){const q=norm(searchInput.value);const filtered=!q?ratin
 function renderSeptemberRows(data){septemberList.innerHTML="";if(!data.length){septemberList.innerHTML='<div class="empty">Пока нет зачтённых результатов сентября.</div>';return}data.forEach(item=>{const card=document.createElement("button");card.className="athlete-card";card.type="button";if(item.place===1)card.classList.add("top-1");if(item.place===2)card.classList.add("top-2");if(item.place===3)card.classList.add("top-3");card.innerHTML=`<div class="place-box"><div class="place">${esc(item.place)}</div></div><div class="athlete-main"><div class="athlete-name">${esc(item.name)}</div><div class="athlete-username">${item.username?"@"+esc(item.username):"username не указан"}</div><div class="athlete-rank">общий рейтинг: ${esc(item.generalPlace||"—")}</div></div><div class="athlete-side"><div class="level-label">очки</div><div class="level-number">${Math.round(item.points)}</div><div class="workout-number">${esc(item.workouts)}</div><div class="workout-label">трен.</div></div>`;septemberList.appendChild(card)})}
 function renderSeptember(rows){septemberData=rows.slice(1).filter(r=>r[0]&&r[1]&&num(r[4])>0).map(r=>({place:num(r[0]),name:r[1],username:r[2]||"",workouts:num(r[3]),points:num(r[4]),level:num(r[5]),generalPlace:r[6]||"",key:r[7]||makeKey(r[1],r[2])}));searchSeptember();septemberLoading.style.display="none";septemberList.style.display="grid"}
 function searchSeptember(){const q=norm(septemberSearchInput.value);const filtered=!q?septemberData:septemberData.filter(i=>norm(i.name).includes(q)||norm(i.username).includes(q));renderSeptemberRows(filtered);septemberSearchInfo.style.display=q?"block":"none";septemberSearchInfo.textContent=q?`Найдено: ${filtered.length}`:""}
-async function loadData(manual=false){if(isLoadingRating)return;isLoadingRating=true;loading.style.display="block";ratingList.style.display="none";if(manual)lastUpdated.textContent="Обновляю данные...";try{const [ratingCsv,detailsCsv,goalCsv]=await Promise.all([fetchFreshCsv(SOURCES.rating),fetchFreshCsv(SOURCES.details),fetchFreshCsv(SOURCES.goal)]);renderTable(parseCSV(ratingCsv),parseCSV(detailsCsv),parseCSV(goalCsv));lastUpdated.textContent="Обновлено: "+new Date().toLocaleString("ru-RU")}catch(e){console.error(e);loading.style.display="none";ratingList.style.display="grid";ratingList.innerHTML='<div class="error">Не удалось загрузить рейтинг. Проверь публикацию Google-таблицы или обнови страницу через 1-2 минуты.</div>';lastUpdated.textContent="Ошибка обновления данных"}finally{isLoadingRating=false}}
-async function loadSeptember(manual=false){if(isLoadingSeptember)return;isLoadingSeptember=true;septemberLoading.style.display="block";septemberList.style.display="none";if(manual)septemberLastUpdated.textContent="Обновляю данные...";try{const csv=await fetchFreshCsv(SOURCES.september);renderSeptember(parseCSV(csv));septemberLastUpdated.textContent="Обновлено: "+new Date().toLocaleString("ru-RU")}catch(e){console.error(e);septemberLoading.style.display="none";septemberList.style.display="grid";septemberList.innerHTML='<div class="error">Не удалось загрузить рейтинг сентября. Обнови страницу через 1-2 минуты.</div>';septemberLastUpdated.textContent="Ошибка обновления данных"}finally{isLoadingSeptember=false}}
+async function loadData(manual=false){
+  if(isLoadingRating)return;
+  isLoadingRating=true;
+  loading.style.display="block";
+  ratingList.style.display="none";
+  if(manual)lastUpdated.textContent="Обновляю данные...";
+  try{
+    const payload=await fetchApi("general");
+    const data=payload.data||{};
+    renderTable(data.rating||[],data.details||[],data.goal||[]);
+    lastUpdated.textContent="Обновлено: "+new Date().toLocaleString("ru-RU");
+  }catch(e){
+    console.error(e);
+    loading.style.display="none";
+    ratingList.style.display="grid";
+    ratingList.innerHTML='<div class="error">Не удалось загрузить рейтинг. Нажми «Обновить рейтинг» через 1-2 минуты.</div>';
+    lastUpdated.textContent="Ошибка обновления данных";
+  }finally{
+    isLoadingRating=false;
+  }
+}
+async function loadSeptember(manual=false){
+  if(isLoadingSeptember)return;
+  isLoadingSeptember=true;
+  septemberLoading.style.display="block";
+  septemberList.style.display="none";
+  if(manual)septemberLastUpdated.textContent="Обновляю данные...";
+  try{
+    const payload=await fetchApi("september");
+    const data=payload.data||{};
+    renderSeptember(data.september||[]);
+    septemberLastUpdated.textContent="Обновлено: "+new Date().toLocaleString("ru-RU");
+  }catch(e){
+    console.error(e);
+    septemberLoading.style.display="none";
+    septemberList.style.display="grid";
+    septemberList.innerHTML='<div class="error">Не удалось загрузить рейтинг сентября. Нажми «Обновить рейтинг» через 1-2 минуты.</div>';
+    septemberLastUpdated.textContent="Ошибка обновления данных";
+  }finally{
+    isLoadingSeptember=false;
+  }
+}
 function openDetails(key){const athlete=ratingData.find(i=>i.key===key),items=detailsData.filter(i=>i.key===key).sort((a,b)=>getWeekNumber(b.date)-getWeekNumber(a.date));if(!athlete)return;modalName.textContent=athlete.name;modalMeta.textContent=(athlete.username?"@"+athlete.username+" · ":"")+`${athlete.workouts} тренировок · уровень ${Math.round(athlete.level)}`;const goal=goalData.find(g=>g.key===key);const history=items.map(i=>`<div class="history-row"><div class="history-date">${esc(i.date)}</div><div><div class="history-id">${esc(i.workoutId)}</div><div class="history-id">${esc(i.title)}</div></div><div class="history-level">${esc(i.level)}</div></div>`).join("")||'<div class="empty">Деталей пока нет.</div>';detailsContent.innerHTML=`<section class="panel"><div class="panel-title">Профиль</div><div class="profile-grid"><div class="mini-card"><div class="mini-label">Место</div><div class="mini-number">${esc(athlete.place)}</div></div><div class="mini-card"><div class="mini-label">Тренировок</div><div class="mini-number">${esc(athlete.workouts)}</div></div><div class="mini-card"><div class="mini-label">Средний уровень</div><div class="mini-number">${Math.round(athlete.level)}</div></div><div class="mini-card"><div class="mini-label">Ранг</div><div class="mini-small">${esc(athlete.rank)}</div></div></div></section>${goal?`<section class="panel"><div class="panel-title">Цель дня</div><div class="goal-box"><div class="goal-title">${esc(goal.title||goal.workoutId)}</div><div class="goal-text">Текущий уровень: ${esc(goal.currentLevel||"-")}. Цель: ${esc(goal.neededLevel||"-")}.</div><div class="goal-number">${esc(goal.status||"")}</div><a class="telegram-button" href="${BOT_URL}" target="_blank" rel="noopener">Перейти в бот</a></div></section>`:""}<section class="panel"><div class="panel-title">История тренировок</div><div class="history-list">${history}</div></section>`;detailsModal.classList.add("is-open")}
 function switchTab(tab){document.querySelectorAll(".tab-button").forEach(b=>b.classList.toggle("is-active",b.dataset.tab===tab));$("generalPanel").classList.toggle("is-active",tab==="general");$("septemberPanel").classList.toggle("is-active",tab==="september");$("mainLabel").textContent=tab==="general"?"ОБЩИЙ РЕЙТИНГ":"РЕЙТИНГ СЕНТЯБРЯ";$("mainTitle").textContent=tab==="general"?"ОБЩИЙ РЕЙТИНГ":"РЕЙТИНГ СЕНТЯБРЯ";$("mainSubtitle").textContent=tab==="general"?"Учитываются последние 30 календарных дней. Для попадания в рейтинг нужно минимум 5 полностью выполненных тренировок. Место определяется по точному среднему уровню, при равенстве выше тот, у кого больше выполненных тренировок.":"Отдельный месячный зачёт ФОРМА20. Участники начинают с нуля, очки начисляются за полностью выполненные тренировки сентября.";if(tab==="september"&&!septemberData.length)loadSeptember()}
 document.querySelectorAll(".tab-button").forEach(btn=>btn.addEventListener("click",()=>switchTab(btn.dataset.tab)));$("refreshBtn").addEventListener("click",()=>loadData(true));$("resetBtn").addEventListener("click",()=>{searchInput.value="";searchAthlete()});searchInput.addEventListener("input",searchAthlete);ratingList.addEventListener("click",e=>{const card=e.target.closest(".athlete-card");if(card)openDetails(card.dataset.key)});$("septemberRefreshBtn").addEventListener("click",()=>loadSeptember(true));$("septemberResetBtn").addEventListener("click",()=>{septemberSearchInput.value="";searchSeptember()});septemberSearchInput.addEventListener("input",searchSeptember);modalClose.addEventListener("click",()=>detailsModal.classList.remove("is-open"));detailsModal.addEventListener("click",e=>{if(e.target===detailsModal)detailsModal.classList.remove("is-open")});document.addEventListener("keydown",e=>{if(e.key==="Escape")detailsModal.classList.remove("is-open")});loadData();setInterval(()=>{loadData();if($("septemberPanel").classList.contains("is-active"))loadSeptember()},AUTO_REFRESH_MS);
